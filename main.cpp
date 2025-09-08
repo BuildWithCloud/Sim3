@@ -1,6 +1,8 @@
 #include <iostream>
-#include "Simulation/Sim3.h"
+#include "Simulation/Setup.h"
 
 int main() {
+    Setup setup;
+    setup.Main();
     return 0;
 }
