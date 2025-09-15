@@ -13,13 +13,23 @@
 
 class Sim3 {
 public:
-    static void simulate(btDynamicsWorld *dynamics_world, const Config *config);
-    static btVector3 EngineForceFromControlInputs(float throttle, float TVCAngleX, float TVCAngleY, const Config* config);
-    static float CalculateTrueThrottlePosition(float desiredThrottle, float currentThrottle, const Config* config);
+    Sim3(Config* config);
+    void simulate(btDynamicsWorld *dynamics_world);
+    btVector3 EngineForceFromControlInputs(float throttle, float TVCAngleX, float TVCAngleY);
+    float CalculateTrueThrottlePosition(float desiredThrottle, float currentThrottle);
 
-    static bool AllowEngine(float throttle, float fuelMass, const Config *config);
+    bool AllowEngine(float throttle, float fuelMass);
 
-    static void SaveLog(SimData *logs[], int iterations);
+    void SaveLog(SimData *logs[], int iterations);
+
+private:
+    btVector3 EngineForce;
+    float throttle = 0;
+    float FuelMass = 0;
+    Config* SimulationConfig;
+
+
+    btVector3 CalculateIMULinearAccels();
 };
 
 

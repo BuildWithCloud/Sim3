@@ -20,8 +20,8 @@ void Setup::Main() {
     btRigidBody floor = InitialiseFloor(dynamicsWorld, config);
     // End Initialisation
     // Start Simulation
-    Sim3 sim;
-    sim.simulate(dynamicsWorld, config);
+    Sim3* sim = new Sim3(config) ;
+    sim->simulate(dynamicsWorld);
     // End Simulation
     // Cleanup and deletion
     delete dynamicsWorld;

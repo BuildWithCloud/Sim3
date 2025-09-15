@@ -10,7 +10,7 @@
 
 class SensorData {
 public:
-    btVector3* IMULinearAccels; // (m/s^2) acceleration measured by the IMU
+    btVector3* IMULinearAccels; // (m/s^2) acceleration measured by the IMU, these are relative to the rocket at this instant
     btVector3* IMUAngularAccels; // rad/s^2 anticlockwise around the axis
     std::optional<float> LIDARAltitude; // (m) Distance from ground to lidar (see config for further details)
     float Thrust; // (N) magnitude of thrust currently being produced
