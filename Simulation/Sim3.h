@@ -5,7 +5,6 @@
 #ifndef SIM3_SIM3_H
 #define SIM3_SIM3_H
 #include <iosfwd>
-#include <bits/stl_vector.h>
 #include <BulletDynamics/Dynamics/btDynamicsWorld.h>
 
 #include "Config.h"

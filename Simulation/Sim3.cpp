@@ -8,12 +8,12 @@
 #include "Config.h"
 #include <BulletDynamics/Dynamics/btDynamicsWorld.h>
 #include "SimData.h"
-#include <vector>
+#include <fstream>
 
 void Sim3::simulate(btDynamicsWorld* dynamics_world, const Config* config) {
     btRigidBody* rocket = btRigidBody::upcast(dynamics_world->getCollisionObjectArray()[0]);
-    int iterations = static_cast<int>(config->SimulationTime / config->TimeStep);
-    SimData* logs[iterations] {new SimData()};
+    const int iterations = static_cast<int>(config->SimulationTime / config->TimeStep);
+    SimData* logs[iterations] = {};
     float throttle = 0.0f;
     float FuelMass = config->InitialPropVolume * config->PropDensity;
     for (int i = 0; i < iterations; i++) {
@@ -100,4 +100,19 @@ void Sim3::SaveLog( SimData* logs[], int iterations ) {
     for (int i = 0; i < iterations ; i++) {
         output += logs[i]->GetString() + "\n";
     }
+    std::ifstream name("../NextLog.txt");
+    std::string input;
+    name >> input;
+    int nextNumber = std::stoi(input);
+
+    std::string pathToWriteLogs = "../Logs/log" + std::to_string(nextNumber) + ".csv";
+
+    std::ofstream out(pathToWriteLogs);
+    out << output;
+    out.close();
+
+    nextNumber ++;
+    std::ofstream out2("../NextLog.txt");
+    out2 << nextNumber;
+    out2.close();
 }
