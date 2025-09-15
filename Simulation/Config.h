@@ -45,8 +45,8 @@ public:
     // Simulation Config
     btTransform RocketStartPosition = btTransform(btQuaternion(0, 0, 0, 1), btVector3(0, 0, 0));
                                                                                     // start position of the rocket
-    float SimulationTime = 5.f; // (s) total time to simulate
-    float TimeStep = 0.001f; // (s) time step for the main simulation loop
+    const float SimulationTime = 5.f; // (s) total time to simulate
+    const float TimeStep = 0.001f; // (s) time step for the main simulation loop
     std::string SimulationOutputLocaiton = "/home/joebishop/Documents/Uni/Starworks/Simulations/Sim3/Logs";
 };
 

@@ -15,8 +15,9 @@ SimData::SimData(const float time, const btVector3 pos, const btQuaternion orien
     FuelMass = fuelMass;
     EngineForce = engineForce;
 }
+SimData::SimData() = default;
 
-std::string SimData::GetString() {
+std::string SimData::GetString() const {
     std::string output = "";
     output += std::to_string(Time) + ",";
     output += std::to_string(position.getX()) + ",";

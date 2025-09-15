@@ -12,8 +12,8 @@
 
 void Sim3::simulate(btDynamicsWorld* dynamics_world, const Config* config) {
     btRigidBody* rocket = btRigidBody::upcast(dynamics_world->getCollisionObjectArray()[0]);
-    std::vector<SimData> logs;
     int iterations = static_cast<int>(config->SimulationTime / config->TimeStep);
+    SimData* logs[iterations] {new SimData()};
     float throttle = 0.0f;
     float FuelMass = config->InitialPropVolume * config->PropDensity;
     for (int i = 0; i < iterations; i++) {
@@ -21,6 +21,8 @@ void Sim3::simulate(btDynamicsWorld* dynamics_world, const Config* config) {
 
         // Run Control
         float DesiredThrottleInput = 0.5f;
+        float DesiredTVCX = 0.f;
+        float DesiredTVCY = 0.f;
         // Change Vehicle State
         throttle = CalculateTrueThrottlePosition(DesiredThrottleInput, throttle, config);
         FuelMass = FuelMass - throttle * config->MaxFuelFlowRate * config->TimeStep;
@@ -34,10 +36,14 @@ void Sim3::simulate(btDynamicsWorld* dynamics_world, const Config* config) {
         if (AllowEngine(throttle, FuelMass, config)) rocket->applyForce(EngineForce, config->EnginePosition);
 
         // Save Data
-        logs.emplace_back(SimData(i * config->TimeStep, rocket->getCenterOfMassPosition(), rocket->getOrientation(),
-                              throttle, FuelMass, EngineForce));
+        logs[i] = new SimData(i * config->TimeStep, rocket->getCenterOfMassPosition(), rocket->getOrientation(),
+                              throttle, FuelMass, EngineForce);
         // Simulate next step
         dynamics_world->stepSimulation(config->TimeStep);
+    }
+    SaveLog(logs, iterations);
+    for (int i = 0; i < iterations; i++) {
+        delete logs[i];
     }
 
 }
@@ -89,9 +95,9 @@ bool Sim3::AllowEngine(float throttle, float fuelMass, const Config* config) {
     return true;
 }
 
-void Sim3::SaveLog( std::vector<SimData>& logs) {
+void Sim3::SaveLog( SimData* logs[], int iterations ) {
     std::string output = "Time,posX,posY,posZ,orientationX,orientationY,orientationZ,orientationW,Throttle,FuelMass,EngineForceX,EngineForceY,EngineForceZ\n";
-    for (auto log : logs) {
-        output += log->GetString() + "\n";
+    for (int i = 0; i < iterations ; i++) {
+        output += logs[i]->GetString() + "\n";
     }
 }

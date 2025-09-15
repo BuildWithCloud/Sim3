@@ -20,7 +20,7 @@ public:
 
     static bool AllowEngine(float throttle, float fuelMass, const Config *config);
 
-    static void SaveLog(std::vector<SimData> &logs);
+    static void SaveLog(SimData *logs[], int iterations);
 };
 
 
