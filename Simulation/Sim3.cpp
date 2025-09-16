@@ -39,7 +39,8 @@ void Sim3::simulate(btDynamicsWorld* dynamics_world) {
         if (AllowEngine(throttle, FuelMass)) Rocket->applyForce(EngineForce, SimulationConfig->EnginePosition);
 
         // Save Data
-        Logs.push_back( new SimData(i * SimulationConfig->TimeStep, Rocket->getCenterOfMassPosition(), Rocket->getOrientation(),
+        btVector3 currentRocketPosition = Rocket->getCenterOfMassPosition() - SimulationConfig->COMPosition;
+        Logs.push_back( new SimData(i * SimulationConfig->TimeStep, currentRocketPosition, Rocket->getOrientation(),
                               throttle, FuelMass, EngineForce));
         // Simulate next step
         dynamics_world->stepSimulation(SimulationConfig->TimeStep);
