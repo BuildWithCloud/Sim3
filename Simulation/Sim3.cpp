@@ -47,7 +47,7 @@ void Sim3::simulate(btDynamicsWorld* dynamics_world) {
         // Save Data
         btVector3 currentRocketPosition = Rocket->getCenterOfMassPosition() - COMPosition;
         Logs.push_back( new SimData(i * SimulationConfig->TimeStep, currentRocketPosition, Rocket->getOrientation(),
-                              throttle, FuelMass, EngineForce));
+                              throttle, FuelMass, EngineForce, COMPosition));
         // Simulate next step
         dynamics_world->stepSimulation(SimulationConfig->TimeStep);
     }
@@ -127,7 +127,7 @@ btVector3 Sim3::CalculateCOMPosition() {
 
 //Logging
 void Sim3::SaveLog() {
-    std::string output = "Time,posX,posY,posZ,velX,velY,velZ,orientationX,orientationY,orientationZ,orientationW,Throttle,FuelMass,EngineForceX,EngineForceY,EngineForceZ\n";
+    std::string output = SimData::GetHeaderString();
     for (auto log : Logs) {
         output += log->GetString() + "\n";
     }

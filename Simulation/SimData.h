@@ -17,9 +17,11 @@ public:
     float Throttle;
     float FuelMass;
     btVector3 EngineForce;
+    btVector3 COMPosition;
     SimData(const float time, const btVector3 pos, const btQuaternion orient, const float throttle,
-            const float fuelMass, const btVector3 engineForce);
+            const float fuelMass, const btVector3 engineForce, const btVector3 comPosition);
     SimData();
     std::string GetString() const;
+    static std::string GetHeaderString();
 };
 #endif //SIM3_SIMDATA_H
