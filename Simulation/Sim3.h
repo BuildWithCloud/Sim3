@@ -16,10 +16,7 @@ class Sim3 {
 public:
     Sim3(Config* config);
     void simulate(btDynamicsWorld *dynamics_world);
-    btVector3 EngineForceFromControlInputs(float throttle, float TVCAngleX, float TVCAngleY);
-    float CalculateTrueThrottlePosition(float desiredThrottle, float currentThrottle);
 
-    bool AllowEngine(float throttle, float fuelMass);
 
     void SaveLog();
 
@@ -30,9 +27,18 @@ private:
     Config* SimulationConfig;
     btRigidBody* Rocket;
     std::vector<SimData*> Logs;
+    // Engine
+    btVector3 EngineForceFromControlInputs(float throttle, float TVCAngleX, float TVCAngleY);
+    bool AllowEngine(float throttle, float fuelMass);
+    float CalculateTrueThrottlePosition(float desiredThrottle, float currentThrottle);
 
-
+    // Sensors
     btVector3 CalculateIMULinearAccels();
+
+    // Simulation
+    btVector3 CalculateCOMPosition();
+
+    // Logging
 };
 
 

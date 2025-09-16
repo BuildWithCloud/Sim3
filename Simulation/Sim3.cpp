@@ -110,6 +110,8 @@ btVector3 Sim3::CalculateIMULinearAccels() {
     return CurrentLinAcc;
 }
 
+//Calculating thigns about the vehicle
+
 //Logging
 void Sim3::SaveLog() {
     std::string output = "Time,posX,posY,posZ,velX,velY,velZ,orientationX,orientationY,orientationZ,orientationW,Throttle,FuelMass,EngineForceX,EngineForceY,EngineForceZ\n";
