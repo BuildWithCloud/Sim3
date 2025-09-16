@@ -27,10 +27,10 @@ void Sim3::simulate(btDynamicsWorld* dynamics_world) {
         float DesiredThrottleInput = 0.5f;
         float DesiredTVCX = 0.f;
         float DesiredTVCY = 0.f;
-        // Change Vehicle State
+
+        // Set Changes in control surfaces
         throttle = CalculateTrueThrottlePosition(DesiredThrottleInput, throttle);
-        FuelMass = FuelMass - throttle * SimulationConfig->MaxFuelFlowRate * SimulationConfig->TimeStep;
-        if (FuelMass < 0.f) FuelMass = 0.f;
+
         // Figure out forces from control output
         EngineForce = EngineForceFromControlInputs(throttle, 0.0f, 0.0f);
 
@@ -38,8 +38,14 @@ void Sim3::simulate(btDynamicsWorld* dynamics_world) {
         EngineForce = EngineForce.rotate(Rocket->getOrientation().getAxis(), Rocket->getOrientation().getAngle());
         if (AllowEngine(throttle, FuelMass)) Rocket->applyForce(EngineForce, SimulationConfig->EnginePosition);
 
+        // Change Vehicle State
+        FuelMass = FuelMass - throttle * SimulationConfig->MaxFuelFlowRate * SimulationConfig->TimeStep;
+        if (FuelMass < 0.f) FuelMass = 0.f;
+        COMPosition = CalculateCOMPosition();
+        Rocket->setCenterOfMassTransform(btTransform(btQuaternion(0, 0, 0, 1), COMPosition));
+
         // Save Data
-        btVector3 currentRocketPosition = Rocket->getCenterOfMassPosition() - SimulationConfig->COMPosition;
+        btVector3 currentRocketPosition = Rocket->getCenterOfMassPosition() - COMPosition;
         Logs.push_back( new SimData(i * SimulationConfig->TimeStep, currentRocketPosition, Rocket->getOrientation(),
                               throttle, FuelMass, EngineForce));
         // Simulate next step
@@ -110,7 +116,13 @@ btVector3 Sim3::CalculateIMULinearAccels() {
     return CurrentLinAcc;
 }
 
-//Calculating thigns about the vehicle
+//Calculating things about the vehicle
+btVector3 Sim3::CalculateCOMPosition() {
+    float fuelProportion = SimulationConfig->InitialPropVolume * SimulationConfig->PropDensity / FuelMass;
+    btVector3 DifferenceFromDryToWet = SimulationConfig->COMFullPosition - SimulationConfig->COMDryPosition;
+    btVector3 COMPosition = SimulationConfig->COMDryPosition + fuelProportion * DifferenceFromDryToWet;
+    return COMPosition;
+}
 
 //Logging
 void Sim3::SaveLog() {

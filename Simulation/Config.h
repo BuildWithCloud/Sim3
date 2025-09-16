@@ -38,7 +38,8 @@ public:
 
     // Rocket Config
     float RocketDryMass = 35.f; // (kg) mass of the rocket without propellant
-    btVector3 COMPosition = btVector3(0, 0, -0.2);
+    btVector3 COMDryPosition = btVector3(0, 0, -0.2); // Centre of mass position without fuel
+    btVector3 COMFullPosition = btVector3(0, 0, -0.5); // Centre of mass position full of fuel
     float RocketHeight = 2.f; // (m) height of the rocket
     float RocketRadius = 0.5f; // (m) radius of the rocket
 

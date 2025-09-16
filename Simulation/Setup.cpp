@@ -44,7 +44,7 @@ btRigidBody Setup::InitialiseRocket(btDynamicsWorld* dynamics_world, Config* con
     btRigidBody::btRigidBodyConstructionInfo rbInfo(mass, myMotionState, rocketCollisionShape, localInertia);
     auto* body = new btRigidBody(rbInfo);
     btTransform COMTransform = btTransform::getIdentity();
-    COMTransform.setOrigin(config->COMPosition);
+    COMTransform.setOrigin(config->COMFullPosition);
     body->setCenterOfMassTransform(COMTransform);
     dynamics_world->addRigidBody(body);
     return *body;

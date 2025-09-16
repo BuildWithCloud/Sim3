@@ -21,12 +21,16 @@ public:
     void SaveLog();
 
 private:
-    btVector3 EngineForce;
-    float throttle = 0;
-    float FuelMass = 0;
     Config* SimulationConfig;
     btRigidBody* Rocket;
     std::vector<SimData*> Logs;
+
+    // Rocket present state
+    float FuelMass = 0;
+    float throttle = 0;
+    btVector3 EngineForce;
+    btVector3 COMPosition;
+
     // Engine
     btVector3 EngineForceFromControlInputs(float throttle, float TVCAngleX, float TVCAngleY);
     bool AllowEngine(float throttle, float fuelMass);
