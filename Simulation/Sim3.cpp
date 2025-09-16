@@ -89,7 +89,8 @@ btVector3 Sim3::EngineForceFromControlInputs(float throttle, float TVCAngleX, fl
 float Sim3::CalculateTrueThrottlePosition(float desiredThrottle, float currentThrottle) {
     float maxChange = SimulationConfig->MaxRateOfChangeOfThrottle * SimulationConfig->TimeStep;
     float throttleDifference = desiredThrottle - currentThrottle;
-    return std::ranges::clamp(throttleDifference, throttleDifference-maxChange, throttleDifference+maxChange);
+    float trueThrottleDifference = std::ranges::clamp(throttleDifference, throttleDifference-maxChange, throttleDifference+maxChange);
+    return trueThrottleDifference + currentThrottle;
 }
 
 bool Sim3::AllowEngine(float throttle, float fuelMass) {
