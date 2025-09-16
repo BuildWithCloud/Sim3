@@ -48,6 +48,7 @@ void Sim3::simulate(btDynamicsWorld* dynamics_world) {
     SaveLog();
 }
 
+// Engine Things
 btVector3 Sim3::EngineForceFromControlInputs(float throttle, float TVCAngleX, float TVCAngleY) {
     // Clamp throttle
     if (throttle < SimulationConfig->MinThrottle) {
@@ -95,6 +96,21 @@ bool Sim3::AllowEngine(float throttle, float fuelMass) {
     return true;
 }
 
+// Sensors:
+//IMU
+btVector3 Sim3::CalculateIMULinearAccels() {
+    // true value
+    SimData* PreviousSimData = Logs.back();
+    btVector3 PreviousLinVel = PreviousSimData->velocity;
+    btVector3 CurrentLinVel = Rocket->getLinearVelocity();
+    btVector3 CurrentLinAcc = (CurrentLinVel - PreviousLinVel) / SimulationConfig->TimeStep;
+    // add noise
+
+    // return
+    return CurrentLinAcc;
+}
+
+//Logging
 void Sim3::SaveLog() {
     std::string output = "Time,posX,posY,posZ,velX,velY,velZ,orientationX,orientationY,orientationZ,orientationW,Throttle,FuelMass,EngineForceX,EngineForceY,EngineForceZ\n";
     for (auto log : Logs) {
@@ -115,16 +131,4 @@ void Sim3::SaveLog() {
     std::ofstream out2("../NextLog.txt");
     out2 << nextNumber;
     out2.close();
-}
-
-btVector3 Sim3::CalculateIMULinearAccels() {
-    // true value
-    SimData* PreviousSimData = Logs.back();
-    btVector3 PreviousLinVel = PreviousSimData->velocity;
-    btVector3 CurrentLinVel = Rocket->getLinearVelocity();
-    btVector3 CurrentLinAcc = (CurrentLinVel - PreviousLinVel) / SimulationConfig->TimeStep;
-    // add noise
-
-    // return
-    return CurrentLinAcc;
 }
