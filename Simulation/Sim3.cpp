@@ -8,6 +8,7 @@
 #include <BulletDynamics/Dynamics/btDynamicsWorld.h>
 #include "SimData.h"
 #include <fstream>
+#include <iostream>
 #include <vector>
 
 Sim3::Sim3(Config* config) {
@@ -119,7 +120,7 @@ btVector3 Sim3::CalculateIMULinearAccels() {
 
 //Calculating things about the vehicle
 btVector3 Sim3::CalculateCOMPosition() {
-    float fuelProportion = SimulationConfig->InitialPropVolume * SimulationConfig->PropDensity / FuelMass;
+    float fuelProportion = (FuelMass) / (SimulationConfig->InitialPropVolume * SimulationConfig->PropDensity);
     btVector3 DifferenceFromDryToWet = SimulationConfig->COMFullPosition - SimulationConfig->COMDryPosition;
     btVector3 COMPosition = SimulationConfig->COMDryPosition + fuelProportion * DifferenceFromDryToWet;
     return COMPosition;
