@@ -23,6 +23,9 @@ std::string SimData::GetString() const {
     output += std::to_string(position.getX()) + ",";
     output += std::to_string(position.getY()) + ",";
     output += std::to_string(position.getZ()) + ",";
+    output += std::to_string(velocity.getX()) + ",";
+    output += std::to_string(velocity.getY()) + ",";
+    output += std::to_string(velocity.getZ()) + ",";
     output += std::to_string(orientation.getX()) + ",";
     output += std::to_string(orientation.getY()) + ",";
     output += std::to_string(orientation.getZ()) + ",";

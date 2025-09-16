@@ -8,15 +8,15 @@
 #include <BulletDynamics/Dynamics/btDynamicsWorld.h>
 #include "SimData.h"
 #include <fstream>
+#include <vector>
 
 Sim3::Sim3(Config* config) {
     SimulationConfig= config;
 }
 
 void Sim3::simulate(btDynamicsWorld* dynamics_world) {
-    btRigidBody* rocket = btRigidBody::upcast(dynamics_world->getCollisionObjectArray()[0]);
-    const int iterations = static_cast<int>(SimulationConfig->SimulationTime / SimulationConfig->TimeStep);
-    SimData* logs[iterations] = {};
+    Rocket = btRigidBody::upcast(dynamics_world->getCollisionObjectArray()[0]);
+    const int iterations = int(SimulationConfig->SimulationTime / SimulationConfig->TimeStep);
     throttle = 0.0f;
     FuelMass = SimulationConfig->InitialPropVolume * SimulationConfig->PropDensity;
     EngineForce = btVector3(0, 0, 0);
@@ -35,20 +35,16 @@ void Sim3::simulate(btDynamicsWorld* dynamics_world) {
         EngineForce = EngineForceFromControlInputs(throttle, 0.0f, 0.0f);
 
         //Apply engine force
-        EngineForce = EngineForce.rotate(rocket->getOrientation().getAxis(), rocket->getOrientation().getAngle());
-        if (AllowEngine(throttle, FuelMass)) rocket->applyForce(EngineForce, SimulationConfig->EnginePosition);
+        EngineForce = EngineForce.rotate(Rocket->getOrientation().getAxis(), Rocket->getOrientation().getAngle());
+        if (AllowEngine(throttle, FuelMass)) Rocket->applyForce(EngineForce, SimulationConfig->EnginePosition);
 
         // Save Data
-        logs[i] = new SimData(i * SimulationConfig->TimeStep, rocket->getCenterOfMassPosition(), rocket->getOrientation(),
-                              throttle, FuelMass, EngineForce);
+        Logs.push_back( new SimData(i * SimulationConfig->TimeStep, Rocket->getCenterOfMassPosition(), Rocket->getOrientation(),
+                              throttle, FuelMass, EngineForce));
         // Simulate next step
         dynamics_world->stepSimulation(SimulationConfig->TimeStep);
     }
-    SaveLog(logs, iterations);
-    for (int i = 0; i < iterations; i++) {
-        delete logs[i];
-    }
-
+    SaveLog();
 }
 
 btVector3 Sim3::EngineForceFromControlInputs(float throttle, float TVCAngleX, float TVCAngleY) {
@@ -98,10 +94,10 @@ bool Sim3::AllowEngine(float throttle, float fuelMass) {
     return true;
 }
 
-void Sim3::SaveLog( SimData* logs[], int iterations ) {
-    std::string output = "Time,posX,posY,posZ,orientationX,orientationY,orientationZ,orientationW,Throttle,FuelMass,EngineForceX,EngineForceY,EngineForceZ\n";
-    for (int i = 0; i < iterations ; i++) {
-        output += logs[i]->GetString() + "\n";
+void Sim3::SaveLog() {
+    std::string output = "Time,posX,posY,posZ,velX,velY,velZ,orientationX,orientationY,orientationZ,orientationW,Throttle,FuelMass,EngineForceX,EngineForceY,EngineForceZ\n";
+    for (auto log : Logs) {
+        output += log->GetString() + "\n";
     }
     std::ifstream name("../NextLog.txt");
     std::string input;
@@ -122,9 +118,12 @@ void Sim3::SaveLog( SimData* logs[], int iterations ) {
 
 btVector3 Sim3::CalculateIMULinearAccels() {
     // true value
-    btVector3 IMULinearAccels = EngineForce;
+    SimData* PreviousSimData = Logs.back();
+    btVector3 PreviousLinVel = PreviousSimData->velocity;
+    btVector3 CurrentLinVel = Rocket->getLinearVelocity();
+    btVector3 CurrentLinAcc = (CurrentLinVel - PreviousLinVel) / SimulationConfig->TimeStep;
     // add noise
 
     // return
-    return IMULinearAccels;
+    return CurrentLinAcc;
 }

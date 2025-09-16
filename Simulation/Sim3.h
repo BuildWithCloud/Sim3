@@ -9,6 +9,7 @@
 
 #include "Config.h"
 #include "SimData.h"
+#include <vector>
 
 
 class Sim3 {
@@ -20,13 +21,15 @@ public:
 
     bool AllowEngine(float throttle, float fuelMass);
 
-    void SaveLog(SimData *logs[], int iterations);
+    void SaveLog();
 
 private:
     btVector3 EngineForce;
     float throttle = 0;
     float FuelMass = 0;
     Config* SimulationConfig;
+    btRigidBody* Rocket;
+    std::vector<SimData*> Logs;
 
 
     btVector3 CalculateIMULinearAccels();

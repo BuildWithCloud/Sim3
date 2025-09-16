@@ -12,6 +12,7 @@ class SimData {
 public:
     float Time;
     btVector3 position;
+    btVector3 velocity;
     btQuaternion orientation;
     float Throttle;
     float FuelMass;
